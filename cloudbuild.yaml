@@ -3,18 +3,16 @@ steps:
     args:
     [
       'build',
-      't',
+      '-t',
       'gcr.io/$PROJECT_ID/puc-fullstack:$SHORT_SHA',
       '.'
     ]
 
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: 'gcr.io/cloud-builders/docker'.
     args:
     [
       'push',
-      '-t',
-      'gcr.io/$PROJECT_ID/puc-fullstack:$SHORT_SHA',
-      '.'
+      'gcr.io/$PROJECT_ID/puc-fullstack:$SHORT_SHA'
     ]
 
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -29,6 +27,5 @@ steps:
       'us-central1',
       '--platform',
       'managed',
-      '--allow-unauthenticated',
-      '--region=us-central1'
+      '--allow-unauthenticated'
     ]
