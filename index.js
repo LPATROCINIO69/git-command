@@ -1,10 +1,20 @@
 require('dotenv').config();
+const rateLimiter = require('express-rate-limit');
+const xss = require('xss-clean');
+const helmet = require('helmet');
 const mysql =require('mysql2');
 const cool = require('cool-ascii-faces');
 const express = require('express');
 const port = process.env.PORT || 3001;
 const app = express();
 const fs = require('fs');
+
+
+const limiter = rateLimiter.rateLimit({
+    windowMs: 60*60*1000,
+    max: 1,
+    message: "Você excedeu 1 requisição em 24 horas."
+})
 
 const mysqlConfig = {
     user:process.env.DB_USER,
@@ -27,6 +37,13 @@ connection.connect((err) => {
     }
 });
 
+
+// Medidas de segurança para a API.
+app.use(limiter);
+app.use(xss());
+app.use(helmet());
+//******************************** */
+
 app.get('/data', (req, res) => {
     connection.query('SELECT * FROM user', (error, results) => {
         if (error) {
@@ -43,11 +60,11 @@ app.listen(port, () => {
 
 
 
-app.get('/',(req,res)=>{
+app.get('/',limiter,(req,res)=>{
     console.log('Hello, Word!');
 })
 
-app.get('/cool',(req,res)=>{
+app.get('/cool', limiter,(req,res)=>{
     res.send(cool());
 })
 
